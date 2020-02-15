@@ -89,6 +89,7 @@ for i=1:n
     yline(0, 'LineStyle','--', 'color','k')
     hold off
     grid on
+    xlabel("Time horizon", 'FontSize', 14)
     
     x = 29.7;                  % A4 paper size
     y = 21.0;                  % A4 paper size
