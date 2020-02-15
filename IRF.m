@@ -18,14 +18,46 @@
 %=========================================================================
 %
 %
-function []=IRF(Phi, Sigma, h)
+function [D_wold]=IRF(Phi, Sigma, h)
+        
+    % ------------
+    % Housekeeping
+    % ------------
     
-    % ------------------------
-    % Orthogonal matrix OMEGA
-    % ------------------------
-    Omega 
+    n = size(Phi,2);                % number of variables
+    p = (size(Phi,1)-1)/n;          % number of lags 
     
-    % --------------------------
+    Sigma_tr = chol(Sigma,'lower'); % Choleski decomposition
+    
+    % -----------------
+    % Prior for \Omega 
+    % -----------------
+    
+    % Period h = 1, 2
+    iter = 0;
+    maxIter = 1000;
+    while iter<maxIter
+        
+        % proposal draws
+        Z = randn(n,1);   
+        Omega1_r = Z/norm(Z);
+
+        % impose restrictions
+        R = Sigma_tr * Omega1_r; 
+        if  R(1) < 0 && R(2) < 0 && R(3) > 0 && R(4) < 0
+            break
+        end
+        
+        % update
+        iter = iter+1;
+    end
+    
+    % Period h>2
+    Z = randn(n,1);   
+    Omega1_u = Z/norm(Z);
+
+    
+    % ---------------------------
     % Impulse Response Functions
     % ---------------------------
     
@@ -40,18 +72,16 @@ function []=IRF(Phi, Sigma, h)
     BigA=[Phi_aux; eye(n*p-n) zeros(n*p-n,n)]; % np x np matrix
     
     
-    % 2.2. Wold + Choleski decomposition
-    Sigma_tr = chol(Sigma,'lower');
-     
+    % 2.2. Wold representation
     C = zeros(n,n,h);
-    for ih = 1:h
+    D = zeros(n,h);
+    for ih = 1:h        
         BigC = BigA^(ih-1);
         C(:,:,ih) = BigC(1:n,1:n);
-        D(:,:,ih) = C(:,:,ih) * Sigma_tr * Omega;
+        D(:,ih) = C(:,:,ih) * Sigma_tr * Omega1_r;
     end
-    
-    irf =(reshape(permute(D,[3 2 1]),h,n*n,[]));
-    
+
+    D_wold = D';
 end
 
 
