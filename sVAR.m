@@ -17,7 +17,6 @@ clear all
 close all
 clc
 
-
 %==========================================================================
 %                       REDUCED-FORM VAR RESULTS
 %==========================================================================
@@ -28,6 +27,7 @@ load(file,'Phip', 'Sigmap');
 nsim = size(Phip,1);        % number of simulations
 n = size(Phip,3);           % number of variables
 p = (size(Phip,2)-1)/n;     % number of lags 
+
 
 %==========================================================================
 %                       IFRs + SIGN RESTRICTIONS
@@ -50,7 +50,7 @@ end
 % -----
 % Means
 % ------
-irf_bar = mean(irf,3);
+irf_mean = mean(irf,3);
 
 % -------------
 % Credible set
@@ -80,7 +80,7 @@ figure_list = {'Output', 'Inflation', 'InterestRate', 'RealMoney'};
 for i=1:n
     
     figure('Name',figure_list{i})
-    plot(0:h-1, irf_bar(:,i), 'color','k', 'LineWidth', 2)
+    plot(0:h-1, irf_mean(:,i), 'color','k', 'LineWidth', 2)
     hold on
     plot(0:h-1,irf_lb(:,i), 'LineStyle', '-.', 'color','k')
     hold on

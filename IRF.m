@@ -29,32 +29,26 @@ function [D_wold]=IRF(Phi, Sigma, h)
     
     Sigma_tr = chol(Sigma,'lower'); % Choleski decomposition
     
-    % -----------------
-    % Prior for \Omega 
-    % -----------------
-    
-    % Period h = 1, 2
+    % --------------------------
+    % Prior: Acceptance sampling
+    % --------------------------
     iter = 0;
     maxIter = 1000;
     while iter<maxIter
         
         % proposal draws
         Z = randn(n,1);   
-        Omega1_r = Z/norm(Z);
+        Omega1 = Z/norm(Z);
 
         % impose restrictions
-        R = Sigma_tr * Omega1_r; 
-        if  R(1) < 0 && R(2) < 0 && R(3) > 0 && R(4) < 0
+        R = Sigma_tr * Omega1; 
+        if R(2) < 0 && R(3) > 0 && R(4) < 0
             break
         end
         
         % update
         iter = iter+1;
     end
-    
-    % Period h>2
-    Z = randn(n,1);   
-    Omega1_u = Z/norm(Z);
 
     
     % ---------------------------
@@ -78,7 +72,7 @@ function [D_wold]=IRF(Phi, Sigma, h)
     for ih = 1:h        
         BigC = BigA^(ih-1);
         C(:,:,ih) = BigC(1:n,1:n);
-        D(:,ih) = C(:,:,ih) * Sigma_tr * Omega1_r;
+        D(:,ih) = C(:,:,ih) * Sigma_tr * Omega1;
     end
 
     D_wold = D';
