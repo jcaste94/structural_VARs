@@ -6,7 +6,7 @@
 % Date  : 24/04/2020
 %==========================================================================
 
-% Exercise 1 & 2: Read VAR.m and calculate IRFs
+% Exercises 1,2,3, & 4: Read VAR.m, calculate IRFs, means and CS
 
 %==========================================================================
 %                             HOUSEKEEPING
@@ -108,4 +108,5 @@ for i=1:n
    saveas(gcf, strcat('pIRF_',figure_list{i},'.pdf'))
     
 end
+
 toc
