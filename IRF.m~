@@ -45,12 +45,7 @@ function [D_wold]=IRF(Phi, Sigma, h)
     % ---------------------
     % 2. Impulse responses 
     % ---------------------
-    
-    % initial candidate
-    Z = randn(n,1);   
-    Omega1 = Z/norm(Z);
-    
-    for ih = 1:h 
+    for ih = 1:h  
     
         if ih < 4
         
@@ -58,6 +53,10 @@ function [D_wold]=IRF(Phi, Sigma, h)
             iter = 0;
             maxIter = 1000;
             while iter<maxIter
+                
+                % proposal draws
+                Z = randn(n,1);   
+                Omega1 = Z/norm(Z);
 
                 % Wold representation 
                 BigC = BigA^(ih-1);
@@ -72,18 +71,20 @@ function [D_wold]=IRF(Phi, Sigma, h)
                 end
 
                 % update
-                Z = randn(n,1);   
-                Omega1 = Z/norm(Z);
                 iter = iter+1;
             end
             
         end
-         
+            
+        % No acceptance sampling required
+        Z = randn(n,1);   
+        Omega1 = Z/norm(Z);
         
-      BigC = BigA^(ih-1);
-      C = BigC(1:n,1:n);
-      D(:,ih) = C * Sigma_tr * Omega1;
-          
+         BigC = BigA^(ih-1);
+         C = BigC(1:n,1:n);
+         D(:,ih) = C * Sigma_tr * Omega1;
+            
+        end
         
     end
 
