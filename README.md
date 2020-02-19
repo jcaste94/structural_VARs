@@ -4,6 +4,6 @@
 
 ### PS3 - problem 1
 
-Impulse response functions to structural shocks. Means and credible sets. 
+Impulse response functions to structural shocks with sign restrictions. Means and bayesian credible sets. Identified sets.
 
  
