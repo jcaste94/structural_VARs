@@ -133,17 +133,17 @@ end
 %=========================================================================
 
 alpha = 0.10;                   % desired significant level for theta set
-bcslow = zeros(nirf, nvar);
-bcshigh = zeros(nirf, nvar);
-bcsmean = zeros(nirf,nvar);
+varirf_bcs_l = zeros(nirf, nvar);
+varirf_bsc_u = zeros(nirf, nvar);
+varirf_mean = zeros(nirf,nvar);
 
 for i = 1:nvar
     
-    bcsmean(:,i) = mean(YYirf_valid((i-1)*nirf+1:i*nirf,:),2);
+    varirf_mean(:,i) = mean(YYirf_valid((i-1)*nirf+1:i*nirf,:),2);
     
-    bcslow(:,i) = prctile(YYirf_valid((i-1)*nirf+1:i*nirf,:)',(alpha/2)*100);
+    varirf_bcs_l(:,i) = prctile(YYirf_valid((i-1)*nirf+1:i*nirf,:)',(alpha/2)*100);
     
-    bcshigh(:,i) = prctile(YYirf_valid((i-1)*nirf+1:i*nirf,:)',(1-(alpha/2))*100);
+    varirf_bsc_u(:,i) = prctile(YYirf_valid((i-1)*nirf+1:i*nirf,:)',(1-(alpha/2))*100);
     
 end
 
@@ -151,16 +151,18 @@ end
 %                            FIGURES
 %=========================================================================
 
+% Figure 1: Mean impulse responses and 90% bayesian credible sets
+
 figure_list = {'Output', 'Inflation', 'InterestRate', 'RealMoney'};
 
 for i=1:nvar
     
     figure('Name',figure_list{i});
-    plot(0:nirf-1, bcsmean(:,i), 'color','k', 'LineWidth', 2);
+    plot(0:nirf-1, varirf_mean(:,i), 'color','k', 'LineWidth', 2);
     hold on
-    plot(0:nirf-1, bcshigh(:,i), 'LineStyle', '--', 'marker', 'o', 'color','r');
+    plot(0:nirf-1, varirf_bsc_u(:,i), 'LineStyle', '--', 'marker', 'o', 'color','r');
     hold on
-    plot(0:nirf-1, bcslow(:,i), 'LineStyle', '-','marker', 'o', 'color','r');
+    plot(0:nirf-1, varirf_bcs_l(:,i), 'LineStyle', '--','marker', 'o', 'color','r');
     hold on
     yline(0, 'LineStyle','--', 'color','k');
     hold off
@@ -188,7 +190,6 @@ end
 
 cd('/Users/Castesil/Documents/GitHub/Econ 722 - Schorfheide/PS3/structural_VARs')
 
-
 %% IDENTIFIED SETS 
 
 %=========================================================================
@@ -213,16 +214,19 @@ disp('                        ');
 
 [ YYirf_hat ] = construct_rfirf(Phi_ols, SSR, nirf);
 
-[ varirf_id_l, varirf_id_u, q_id, q_id_index , GTqpop] = construct_idset(q_grid, ...
+[ varirf_id_l, varirf_id_u, theta, q_id, q_id_index , GTqpop] = construct_idset(q_grid, ...
     signrestrictionsindx, signrestrictions, nirf, YYirf_hat);
 
 length_id = varirf_id_u - varirf_id_l;
 
+% density
+[density,x_den]  = ksdensity(theta); 
 
 %=========================================================================
 %                            FIGURES
 %=========================================================================
 
+% Figure 2: Identified sets and Bayesian credible sets
 figure_list = {'Output', 'Inflation', 'InterestRate', 'RealMoney'};
 
 for i=1:nvar
@@ -232,9 +236,9 @@ for i=1:nvar
     hold on
     plot(0:nirf-1, varirf_id_l(:,i), 'LineStyle','--','marker', 'x', 'color','b');
     hold on
-    plot(0:nirf-1, bcshigh(:,i),'LineStyle','--', 'marker', 'o', 'color','r');
+    plot(0:nirf-1, varirf_bsc_u(:,i),'LineStyle','--', 'marker', 'o', 'color','r');
     hold on
-    plot(0:nirf-1, bcslow(:,i), 'LineStyle','--','marker', 'o', 'color','r');
+    plot(0:nirf-1, varirf_bcs_l(:,i), 'LineStyle','--','marker', 'o', 'color','r');
     hold on
     yline(0, 'LineStyle','--', 'color','k');
     hold off
@@ -255,12 +259,26 @@ for i=1:nvar
     set(gcf, 'PaperPosition',[xMargin yMargin xSize ySize])
     set(gcf, 'PaperOrientation','portrait')
     
-    %cd('/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econometrics IV/PS/PS3/LaTeX/')
+    cd('/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econometrics IV/PS/PS3/LaTeX/')
     saveas(gcf, strcat('pBCS_IS_',figure_list{i},'.pdf'));
 
 end
 
-%cd('/Users/Castesil/Documents/GitHub/Econ 722 - Schorfheide/PS3/structural_VARs')
+% Figure 3: Conditional distribution of IRF on identified set
+figure('Name', 'Conditional distribution')
+plot(x_den, density, 'color', 'k', 'LineWidth', 1.5)
+grid on
+xlabel('Theta', 'FontSize', 14)
 
 
-toc
+set(gcf, 'Units','centimeters', 'Position',[0 0 xSize ySize]/2)
+set(gcf, 'PaperUnits','centimeters')
+set(gcf, 'PaperSize',[x y])
+set(gcf, 'PaperPosition',[xMargin yMargin xSize ySize])
+set(gcf, 'PaperOrientation','portrait')  
+saveas(gcf,'pDistributionTheta.pdf');
+
+cd('/Users/Castesil/Documents/GitHub/Econ 722 - Schorfheide/PS3/structural_VARs')
+
+
+elapsedtime = toc
