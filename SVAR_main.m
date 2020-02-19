@@ -158,9 +158,9 @@ for i=1:nvar
     figure('Name',figure_list{i});
     plot(0:nirf-1, bcsmean(:,i), 'color','k', 'LineWidth', 2);
     hold on
-    plot(0:nirf-1, bcshigh(:,i), 'LineStyle', '-.', 'color','k');
+    plot(0:nirf-1, bcshigh(:,i), 'LineStyle', '--', 'marker', 'o', 'color','r');
     hold on
-    plot(0:nirf-1, bcslow(:,i), 'LineStyle', '-.', 'color','k');
+    plot(0:nirf-1, bcslow(:,i), 'LineStyle', '-','marker', 'o', 'color','r');
     hold on
     yline(0, 'LineStyle','--', 'color','k');
     hold off

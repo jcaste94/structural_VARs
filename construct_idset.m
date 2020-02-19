@@ -45,7 +45,9 @@ for i = 1 : q_dim
     
 end %end of loop for grid of q
 
+% --------------------------------------------------------
 % STEP 2 : construct identified set for impulse responses
+% --------------------------------------------------------
 nq          = size(q_id,2);
 varirf_id_l = zeros(nirf,nvar);
 varirf_id_h = zeros(nirf,nvar);
