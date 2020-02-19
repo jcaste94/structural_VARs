@@ -9,7 +9,7 @@
 %==========================================================================
 
 % PROBLEM 1. Impulse Responses, Bayesian CS, Identified Sets. 
-
+% Exercises 1-6
 
 %% HOUSEKEEPING
 
@@ -188,7 +188,6 @@ end
 
 cd('/Users/Castesil/Documents/GitHub/Econ 722 - Schorfheide/PS3/structural_VARs')
 
-return
 
 %% IDENTIFIED SETS 
 
@@ -219,6 +218,49 @@ disp('                        ');
 
 length_id = varirf_id_u - varirf_id_l;
 
+
+%=========================================================================
+%                            FIGURES
+%=========================================================================
+
+figure_list = {'Output', 'Inflation', 'InterestRate', 'RealMoney'};
+
+for i=1:nvar
+    
+    figure('Name',figure_list{i});
+    plot(0:nirf-1, varirf_id_u(:,i), 'LineStyle','--','marker', 'x', 'color','b');
+    hold on
+    plot(0:nirf-1, varirf_id_l(:,i), 'LineStyle','--','marker', 'x', 'color','b');
+    hold on
+    plot(0:nirf-1, bcshigh(:,i),'LineStyle','--', 'marker', 'o', 'color','r');
+    hold on
+    plot(0:nirf-1, bcslow(:,i), 'LineStyle','--','marker', 'o', 'color','r');
+    hold on
+    yline(0, 'LineStyle','--', 'color','k');
+    hold off
+    grid on
+    xlabel("Time horizon", 'FontSize', 14);
+    
+    x = 29.7;                  % A4 paper size
+    y = 21.0;                  % A4 paper size
+    xMargin = 1;               % left/right margins from page borders
+    yMargin = 1;               % bottom/top margins from page borders
+    xSize = x - 2*xMargin;     % figure size on paper (widht & hieght)
+    ySize = y - 2*yMargin;     % figure size on paper (widht & hieght)
+
+    set(gcf, 'Units','centimeters', 'Position',[0 0 xSize ySize]/2)
+
+    set(gcf, 'PaperUnits','centimeters')
+    set(gcf, 'PaperSize',[x y])
+    set(gcf, 'PaperPosition',[xMargin yMargin xSize ySize])
+    set(gcf, 'PaperOrientation','portrait')
+    
+    %cd('/Users/Castesil/Documents/EUI/Year II - PENN/Spring 2020/Econometrics IV/PS/PS3/LaTeX/')
+    saveas(gcf, strcat('pBCS_IS_',figure_list{i},'.pdf'));
+
+end
+
+%cd('/Users/Castesil/Documents/GitHub/Econ 722 - Schorfheide/PS3/structural_VARs')
 
 
 toc
